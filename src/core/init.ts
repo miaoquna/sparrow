@@ -10,9 +10,10 @@ import { join } from 'node:path';
 import { SUPPORTED_TOOLS, type ToolDefinition } from './config.js';
 import { generateSkillFiles, generateProjectConfig, generateProjectMd } from './skill-generation.js';
 import { initializeGlobalHarness, initializeProjectHarness } from './harness-init.js';
+import { initializePluginRuntimes } from './plugin-init.js';
 import { initializeSkills } from '../skills/index.js';
 
-const SPARROW_VERSION = '0.2.0';
+const SPARROW_VERSION = '0.3.0';
 
 export interface InitOptions {
   /** Comma-separated tool ids or 'all' */
@@ -33,6 +34,8 @@ export interface InitResult {
   globalHarnessFiles: string[];
   /** Project harness files created during init */
   projectHarnessFiles: string[];
+  /** Plugin runtime files installed during init */
+  pluginRuntimeFiles: string[];
 }
 
 /**
@@ -147,6 +150,9 @@ export function executeInit(projectRoot: string, options: InitOptions): InitResu
   const globalHarnessFiles = initializeGlobalHarness();
   const projectHarnessFiles = initializeProjectHarness(projectRoot);
 
+  // Step 8: Install plugin runtimes (archify CLI etc.)
+  const pluginRuntimeFiles = initializePluginRuntimes(projectRoot);
+
   return {
     tools: selectedToolIds,
     projectName: options.projectName,
@@ -155,6 +161,7 @@ export function executeInit(projectRoot: string, options: InitOptions): InitResu
     projectMdPath,
     globalHarnessFiles,
     projectHarnessFiles,
+    pluginRuntimeFiles,
   };
 }
 
@@ -177,6 +184,15 @@ export function formatInitSummary(result: InitResult): string {
   lines.push(`   Global (${result.globalHarnessFiles.length}): ~/.config/sparrow/harness/`);
   lines.push(`   Project (${result.projectHarnessFiles.length}): docs/sparrow/harness/`);
   lines.push('');
+  if (result.pluginRuntimeFiles.length > 0) {
+    const cached = result.pluginRuntimeFiles.filter(f => f.includes('(cached)'));
+    const installed = result.pluginRuntimeFiles.filter(f => !f.includes('(cached)'));
+    const parts: string[] = [];
+    if (cached.length > 0) parts.push(cached.length + ' cached');
+    if (installed.length > 0) parts.push(installed.length + ' installed');
+    lines.push(`🔌 Plugin runtimes (${parts.join(', ')}): ~/.config/sparrow/plugins/`);
+    lines.push('');
+  }
 
   for (const { toolId, files } of result.createdFiles) {
     lines.push(`🔧 ${toolId}:`);

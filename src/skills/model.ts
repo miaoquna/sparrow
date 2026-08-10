@@ -533,7 +533,9 @@ deactivate APP
 
 ## 完成后的下一步
 
-✅ 完成 sparrow-model @{slug} 后，请执行 **sparrow-plan @{slug}**（团队级）—— 基于 spec/api/tech/model 制订实现计划。`;
+✅ 完成 sparrow-model @{slug} 后，请执行 **sparrow-plan @{slug}**（团队级）—— 基于 spec/api/tech/model 制订实现计划。
+
+{{PLUGIN:archify}}`;
 
 export function register(): void {
   registerSkillTemplate('sparrow-model', () => MODEL_BODY);

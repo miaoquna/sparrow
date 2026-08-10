@@ -461,7 +461,9 @@ ExtSys <<-- EVT_OrderPlaced : subscribes
 
 ## 完成后的下一步
 
-✅ 完成 sparrow-design @{slug} 后，请执行 **sparrow-model @{slug}**（团队级）—— 基于 api.md 中的 API 定义，将每个 API 作为动态领域模型任务树的第一级入口，进行领域建模。`;
+✅ 完成 sparrow-design @{slug} 后，请执行 **sparrow-model @{slug}**（团队级）—— 基于 api.md 中的 API 定义，将每个 API 作为动态领域模型任务树的第一级入口，进行领域建模。
+
+{{PLUGIN:archify}}`;
 
 export function register(): void {
   registerSkillTemplate('sparrow-design', () => DESIGN_BODY);

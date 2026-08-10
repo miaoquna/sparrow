@@ -196,16 +196,25 @@ export const SKILLS: SkillDefinition[] = [
   },
 ];
 
+let _pluginSkills: SkillDefinition[] = [];
+let _pluginSkillsRegistered = false;
+
+export function registerPluginSkills(skills: SkillDefinition[]): void {
+  if (_pluginSkillsRegistered) return;
+  _pluginSkills.push(...skills);
+  _pluginSkillsRegistered = true;
+}
+
 /**
  * Get a skill definition by id.
  */
 export function getSkillById(id: string): SkillDefinition | undefined {
-  return SKILLS.find((s) => s.id === id);
+  return [...SKILLS, ..._pluginSkills].find((s) => s.id === id);
 }
 
 /**
- * Get all skills in execution order.
+ * Get all skills (core + plugin) in execution order.
  */
 export function getOrderedSkills(): SkillDefinition[] {
-  return [...SKILLS].sort((a, b) => a.order - b.order);
+  return [...SKILLS, ..._pluginSkills].sort((a, b) => a.order - b.order);
 }

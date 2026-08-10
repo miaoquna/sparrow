@@ -16,6 +16,7 @@ import { execSync } from 'node:child_process';
 import { detectInstalledTools, executeInit, formatInitSummary, formatToolDetectionSummary } from '../core/init.js';
 import { getSupportedToolIds } from '../core/config.js';
 import { initializeGlobalHarness, getGlobalHarnessDir } from '../core/harness-init.js';
+import { initializePluginRuntimes } from '../core/plugin-init.js';
 import { renderWelcomePage, promptInput, promptToolSelection } from '../core/prompts.js';
 
 const program = new Command();
@@ -27,7 +28,7 @@ program
     'Generate structured skills that guide AI agents through domain-driven design,\n' +
     'from business requirements to production code.'
   )
-  .version('0.2.1')
+  .version('0.3.0')
   .addHelpText(
     'after',
     `
@@ -164,7 +165,13 @@ program
     // Runs on every check so older installs pick up the harness.
     const synced = initializeGlobalHarness();
     if (synced.length > 0) {
-      console.log(`📐 Synced ${synced.length} global constraint asset(s) to ${getGlobalHarnessDir()}.`);
+      console.log('📐 Synced ' + synced.length + ' global constraint asset(s) to ' + getGlobalHarnessDir() + '.');
+    }
+
+    // Sync plugin runtimes (check and install missing plugins).
+    const pluginSynced = initializePluginRuntimes(process.cwd());
+    if (pluginSynced.length > 0) {
+      console.log('🔌 Synced ' + pluginSynced.length + ' plugin runtime(s).');
     }
 
     if (localVersion === latestVersion) {

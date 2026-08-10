@@ -6,7 +6,7 @@
  * formatted files via the adapter registry.
  */
 
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import type { SkillDefinition } from './config.js';
 import { getOrderedSkills } from './config.js';
@@ -28,8 +28,24 @@ const SKILL_HARNESS_MAP: Record<string, string[]> = {
   'sparrow-archive': [],
 };
 
+import { augmentPlugins } from '../plugins/index.js';
+import type { SkillPlugin } from '../plugins/types.js';
+import { buildPluginSkillBody } from './plugin-generation.js';
+
 /** Token in skill bodies where the harness reference section is injected. */
 export const HARNESS_TOKEN = '{{HARNESS}}';
+
+/** Token pattern for augment plugin injection: {{PLUGIN:<pluginId>}} */
+const PLUGIN_TOKEN_RE = /\{\{PLUGIN:(\w+)\}\}/g;
+
+function injectAugmentPlugins(body: string, skillId: string): string {
+  return body.replace(PLUGIN_TOKEN_RE, (match, pluginId) => {
+    const plugin = augmentPlugins.find(
+      (p) => p.id === pluginId && p.targetSkills.includes(skillId)
+    );
+    return plugin ? '\n\n---\n\n' + plugin.skillContent + '\n' : match;
+  });
+}
 
 /**
  * Build the harness reference section for a skill.
@@ -103,6 +119,12 @@ export function assembleSkillContent(skill: SkillDefinition): CommandContent {
   };
 }
 
+export function registerPluginSkillTemplates(plugins: SkillPlugin[]): void {
+  for (const p of plugins) {
+    registerSkillTemplate(p.id, () => buildPluginSkillBody(p));
+  }
+}
+
 /**
  * Generate skill and command files for a list of tool ids.
  *
@@ -131,6 +153,9 @@ export function generateSkillFiles(
           ? content.body.replace(HARNESS_TOKEN, harnessSection)
           : content.body + '\n' + harnessSection;
       }
+
+      // Inject augment plugins ({{PLUGIN:archify}} etc.)
+      content.body = injectAugmentPlugins(content.body, skill.id);
 
       // Generate skill file
       const skillPath = join(projectRoot, adapter.getSkillPath(skill.id));
@@ -169,6 +194,16 @@ export function generateProjectConfig(
   version: string,
   projectName: string
 ): string {
+  let existingPlugins: Record<string, string> = {};
+  try {
+    const existing = JSON.parse(readFileSync(join(projectRoot, SPARROW_DIR, 'sparrow.json'), 'utf-8'));
+    if (existing.plugins && typeof existing.plugins === 'object') {
+      existingPlugins = existing.plugins;
+    }
+  } catch {
+    // no existing config — start fresh
+  }
+
   const config = {
     version,
     tools: toolIds,
@@ -176,6 +211,7 @@ export function generateProjectConfig(
     createdAt: new Date().toISOString(),
     outputBase: 'docs/sparrow',
     codeBase: 'backend',
+    ...(Object.keys(existingPlugins).length > 0 ? { plugins: existingPlugins } : {}),
   };
 
   const sparrowDir = join(projectRoot, SPARROW_DIR);

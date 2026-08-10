@@ -677,6 +677,8 @@ revise 模式下，对每个**受变更影响的 BC**，依据 \`project.md\` �
 
 ✅ 完成 sparrow-arch 后，请执行 **sparrow-design @{限界上下文slug}**（团队级）—— 为当前选择的限界上下文定义 API 契约和技术栈。
 
+{{PLUGIN:archify}}
+
 > 若处于 revise 模式且涉及 BC 为 S1–S4，请按对应档位继续 design/model/plan/apply 的 revise 分支；涉及 BC 为 S0 则无需继续下游。变更全部完成后，执行 **sparrow-archive** 归档本次变更。`;
 
 export function register(): void {
