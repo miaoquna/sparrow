@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [0.3.1] - 2026-08-11
+
+> **This release introduces Interaction Context**, solving the fundamental mismatch between DDD's bounded-context-driven pipeline and UI/frontend development. Frontend design and implementation are no longer fragmented by BC boundaries. Instead, the Interaction Context serves as a BC peer — sharing the same `design → model → plan → apply` pipeline — while remaining fully orthogonal, enabling UI+frontend and backend BCs to evolve independently and in parallel.
 
 ### Added
 
