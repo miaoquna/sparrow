@@ -15,24 +15,31 @@ mkdirSync(distDir, { recursive: true });
 mkdirSync(binDir, { recursive: true });
 
 // Build main library
-const mainResult = await esbuild.build({
-  entryPoints: [
-    join(root, 'src', 'cli', 'index.ts'),
-  ],
+const buildOpts = {
   bundle: true,
   platform: 'node',
   target: 'node18',
   format: 'esm',
-  outdir: distDir,
   sourcemap: true,
+  loader: {
+    '.md': 'text',
+  },
   external: [
     'commander',
     'js-yaml',
     '@inquirer/prompts',
   ],
   banner: {
-    js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url);`,
+    js: 'import { createRequire } from \'module\'; const require = createRequire(import.meta.url);',
   },
+};
+
+const mainResult = await esbuild.build({
+  ...buildOpts,
+  entryPoints: [
+    join(root, 'src', 'cli', 'index.ts'),
+  ],
+  outdir: distDir,
 });
 
 if (mainResult.errors.length > 0) {
@@ -42,23 +49,11 @@ if (mainResult.errors.length > 0) {
 
 // Build CLI entry point
 const cliResult = await esbuild.build({
+  ...buildOpts,
   entryPoints: [
     join(root, 'src', 'cli', 'index.ts'),
   ],
-  bundle: true,
-  platform: 'node',
-  target: 'node18',
-  format: 'esm',
   outfile: join(binDir, 'sparrow.js'),
-  sourcemap: true,
-  external: [
-    'commander',
-    'js-yaml',
-    '@inquirer/prompts',
-  ],
-  banner: {
-    js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url);`,
-  },
 });
 
 if (cliResult.errors.length > 0) {

@@ -673,6 +673,38 @@ revise 模式下，对每个**受变更影响的 BC**，依据 \`project.md\` �
 -->
 \`\`\`
 
+## 🖥️ 前端架构（可选）
+
+检查 \`docs/sparrow/ui/\` 目录是否存在：
+
+### 如果不存在
+
+UI 规格尚未生成。询问用户：
+
+> 是否已执行 /sparrow-ui 生成 UI 规格？
+> - 如果用户尚未执行且希望执行，请提示用户先执行 **/sparrow-ui**，然后返回本阶段继续。
+> - 如果用户不需要 UI 设计，则跳过本节，以无前端模式继续。
+
+### 如果存在
+
+读取 UI 规格（\`docs/sparrow/ui/specs/\`、\`docs/sparrow/ui/design-tokens.md\`），在架构设计中纳入前端考虑。
+
+**设计前端架构**（独立于应用架构，写入 \`docs/sparrow/arch/frontend.md\`）：
+
+> 📐 前端架构约束参见 \`arch/frontend.md\` harness。
+
+1. **客户端层**：按 UI 规格确定客户端类型（Web / Mobile / 小程序等）
+2. **微前端评估**：如果项目包含多个独立的 UI 模块，评估是否需要微前端架构（参见 harness）
+3. **应用架构关联**：
+   - 边缘层增加 UI 适配对象（ViewModel ↔ DTO 转换不匹配时）和服务聚合对象（UI 需同时调用多个 BC 时）
+   - 客户端层的设计体现在应用架构图中
+4. **输出 frontend.md**：写入 \`docs/sparrow/arch/frontend.md\`，包含：
+   - 前端架构图（Archify 交互式图）
+   - 前端模块与后端 BC 的对应关系
+   - 前端代码目录结构（按 harness 规范）
+   - 与边缘层的协作关系
+5. **更新 project.md**：在 \`docs/sparrow/project.md\` 中增加前端架构的索引条目
+
 ## 完成后的下一步
 
 ✅ 完成 sparrow-arch 后，请执行 **sparrow-design @{限界上下文slug}**（团队级）—— 为当前选择的限界上下文定义 API 契约和技术栈。

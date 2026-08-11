@@ -1,12 +1,20 @@
-import { archifyPlugin, ARCHIFY_RUNTIME_DIR } from './archify.js';
-import type { AugmentPlugin, SkillPlugin } from './types.js';
+export {
+  getBundledPlugins,
+  getAugmentPlugins,
+  getSkillPlugins,
+  BUNDLED_PLUGIN_VERSIONS,
+  registerBundledPlugin,
+} from './registry.js';
 
-export const augmentPlugins: AugmentPlugin[] = [archifyPlugin];
-export const skillPlugins: SkillPlugin[] = [];
-
-export function getAllPlugins() {
-  return [...augmentPlugins, ...skillPlugins];
-}
-
-export { archifyPlugin, ARCHIFY_RUNTIME_DIR };
-export type { AugmentPlugin, SkillPlugin, Plugin } from './types.js';
+export type {
+  Plugin,
+  PluginManifest,
+  PluginEntry,
+  PluginContributes,
+  PluginRuntime,
+  ContributedSkill,
+  ContributedAugment,
+  ContributedToolAdapter,
+  ContributedCodeGenerator,
+  ContributedHarness,
+} from './types.js';

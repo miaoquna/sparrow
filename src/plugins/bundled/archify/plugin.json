@@ -1,0 +1,18 @@
+{
+  "name": "archify",
+  "displayName": "Archify Diagrams",
+  "version": "2.13.0",
+  "description": "Interactive architecture, workflow, sequence, and data-flow diagrams for Sparrow DDD pipeline",
+  "engines": { "sparrow": ">=0.3.0" },
+  "contributes": {
+    "augments": [
+      { "targetSkill": "sparrow-arch" },
+      { "targetSkill": "sparrow-model" },
+      { "targetSkill": "sparrow-design" }
+    ],
+    "runtime": {
+      "bin": "bin/archify.mjs",
+      "resources": ["schemas/"]
+    }
+  }
+}

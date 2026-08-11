@@ -20,30 +20,38 @@ import { generateProjectMdContent } from './project-md.js';
  */
 const SKILL_HARNESS_MAP: Record<string, string[]> = {
   'sparrow-explore': ['explore/requirements.md'],
-  'sparrow-arch': ['arch/business.md', 'arch/application.md'],
+  'sparrow-ui': ['ui/requirements.md'],
+  'sparrow-arch': ['arch/business.md', 'arch/application.md', 'arch/frontend.md'],
   'sparrow-design': ['design/api-design.md'],
-  'sparrow-model': ['model/architecture.md', 'model/domain-modeling.md'],
+  'sparrow-model': ['model/architecture.md', 'model/domain-modeling.md', 'model/view-modeling.md'],
   'sparrow-plan': [],
   'sparrow-apply': ['apply/implementation.md'],
   'sparrow-archive': [],
 };
 
-import { augmentPlugins } from '../plugins/index.js';
-import type { SkillPlugin } from '../plugins/types.js';
+import { getBundledPlugins } from '../plugins/index.js';
+import type { Plugin } from '../plugins/types.js';
 import { buildPluginSkillBody } from './plugin-generation.js';
 
 /** Token in skill bodies where the harness reference section is injected. */
 export const HARNESS_TOKEN = '{{HARNESS}}';
 
 /** Token pattern for augment plugin injection: {{PLUGIN:<pluginId>}} */
-const PLUGIN_TOKEN_RE = /\{\{PLUGIN:(\w+)\}\}/g;
+const PLUGIN_TOKEN_RE = /\{\{PLUGIN:([\w-]+)\}\}/g;
 
 function injectAugmentPlugins(body: string, skillId: string): string {
   return body.replace(PLUGIN_TOKEN_RE, (match, pluginId) => {
-    const plugin = augmentPlugins.find(
-      (p) => p.id === pluginId && p.targetSkills.includes(skillId)
+    const plugin = getBundledPlugins().find((p) => p.manifest.name === pluginId);
+    if (!plugin) return match;
+
+    const augment = plugin.manifest.contributes.augments?.find(
+      (a) => a.targetSkill === skillId
     );
-    return plugin ? '\n\n---\n\n' + plugin.skillContent + '\n' : match;
+    if (!augment) return match;
+
+    const key = augment.contentFile || 'SKILL.md';
+    const content = plugin.augmentContents[key] || plugin.skillContent;
+    return content ? '\n\n---\n\n' + content + '\n' : match;
   });
 }
 
@@ -119,9 +127,12 @@ export function assembleSkillContent(skill: SkillDefinition): CommandContent {
   };
 }
 
-export function registerPluginSkillTemplates(plugins: SkillPlugin[]): void {
+export function registerPluginSkillTemplates(plugins: Plugin[]): void {
   for (const p of plugins) {
-    registerSkillTemplate(p.id, () => buildPluginSkillBody(p));
+    const skills = p.manifest.contributes.skills || [];
+    for (const skill of skills) {
+      registerSkillTemplate(skill.id, () => buildPluginSkillBody(skill, p));
+    }
   }
 }
 
@@ -194,14 +205,14 @@ export function generateProjectConfig(
   version: string,
   projectName: string
 ): string {
-  let existingPlugins: Record<string, string> = {};
+  let existingPlugins: unknown[] = [];
   try {
     const existing = JSON.parse(readFileSync(join(projectRoot, SPARROW_DIR, 'sparrow.json'), 'utf-8'));
-    if (existing.plugins && typeof existing.plugins === 'object') {
+    if (Array.isArray(existing.plugins)) {
       existingPlugins = existing.plugins;
     }
   } catch {
-    // no existing config — start fresh
+    // no existing config
   }
 
   const config = {
@@ -211,7 +222,8 @@ export function generateProjectConfig(
     createdAt: new Date().toISOString(),
     outputBase: 'docs/sparrow',
     codeBase: 'backend',
-    ...(Object.keys(existingPlugins).length > 0 ? { plugins: existingPlugins } : {}),
+    frontendBase: 'frontend',
+    ...(existingPlugins.length > 0 ? { plugins: existingPlugins } : {}),
   };
 
   const sparrowDir = join(projectRoot, SPARROW_DIR);

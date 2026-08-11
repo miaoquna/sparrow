@@ -403,6 +403,21 @@ backend/
 - [ ] 运行完整构建与测试套件，确保全部通过
 \`\`\`
 
+## 🖥️ 前端任务纳入（可选）
+
+本阶段无需检查 UI 相关文件。实现计划时会读取上一阶段（sparrow-model）生成的 \`model.md\`。
+
+如果 \`model.md\` 中包含 View Model 设计章节，则说明项目需要前端开发，将以下前端任务纳入实现计划：
+
+- 页面开发（基于 UI 规格中的页面和 View Model）
+- 前端组件开发（基于组件库）
+- API 对接（基于 services 层调用后端 API）
+- 状态管理与路由配置
+- 前端代码输出到 \`frontend/{slug}/\` 目录
+- 前端任务标记为可与后端并行执行
+
+如果 \`model.md\` 中**不含** View Model，则跳过本节。
+
 ## 完成后的下一步
 
 ✅ 完成 sparrow-plan @{slug} 后，请执行 **sparrow-apply @{slug}**（团队级）—— 按 plan.md 执行任务，生成 DDD 四层代码。`;

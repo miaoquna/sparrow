@@ -459,6 +459,22 @@ ExtSys <<-- EVT_OrderPlaced : subscribes
 - [ ] **项目级 \`docs/sparrow/api.md\` 已更新**，当前 BC 的 API 已录入
 - [ ] 跨上下文调用关系和通信协议清晰
 
+## 🖥️ 前端架构（读取 frontend.md）
+
+读取 \`docs/sparrow/arch/frontend.md\`。如果文件存在：
+
+### API 设计适配
+
+> 📐 约束参见 \`design/api-design.md\` harness 中「前端架构」章节。
+
+1. **技术选型（tech.md）**：在 tech.md 中增加与 UI 相关的技术决策（前端框架、状态管理、构建工具等）。优先级：全局 harness → 项目 harness → 询问用户。
+2. **序列图**：从 UI 页面（边界对象）开始绘制，流程为 **UI 页面 → 边缘层 → 目标限界上下文**。借鉴 ICONIX 方法论——UI 页面作为边界对象，将用户操作转化为对后端服务契约的调用。
+3. **边缘层适配**：
+   - 如果 UI 的 View Model 与 BC 的 DTO 不匹配 → 增加 UI 适配对象（数据重排/字段融合/缺失字段推导）
+   - 如果 UI 操作需要同时调用多个 BC → 增加服务聚合对象（编排多个调用、组合响应）
+
+如果 \`frontend.md\` 不存在，跳过本节。
+
 ## 完成后的下一步
 
 ✅ 完成 sparrow-design @{slug} 后，请执行 **sparrow-model @{slug}**（团队级）—— 基于 api.md 中的 API 定义，将每个 API 作为动态领域模型任务树的第一级入口，进行领域建模。

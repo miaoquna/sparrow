@@ -135,6 +135,16 @@ export const SKILLS: SkillDefinition[] = [
     category: 'DDD',
   },
   {
+    id: 'sparrow-ui',
+    name: 'Sparrow UI',
+    description: 'Generate frontend UI specs, prototypes, and design tokens (optional)',
+    phase: 'product',
+    order: 1.5,
+    nextSkill: 'sparrow-arch',
+    commandName: 'sparrow-ui',
+    category: 'DDD',
+  },
+  {
     id: 'sparrow-arch',
     name: 'Sparrow Arch',
     description: 'Define business architecture and application architecture with bounded contexts',

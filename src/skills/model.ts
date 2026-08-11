@@ -531,6 +531,26 @@ deactivate APP
 - [ ] 终版类图中聚合根/实体的每个操作，在至少一张序列图中有对应调用
 - [ ] UML 命名风格统一（PascalCase 类名，camelCase 操作/属性）
 
+## 🖥️ View Model 建模（可选）
+
+本阶段无需检查 UI 相关文件。建模时会读取上一阶段（sparrow-design）生成的 \`api.md\` 和 \`tech.md\`。
+
+如果 \`api.md\` 的序列图和 \`tech.md\` 中包含 UI 相关设计（前端技术栈选型、从 UI 页面发起的消息调用），则：
+
+> 📐 约束参见 \`model/view-modeling.md\` harness。
+
+### View Model 设计
+
+1. 以页面和组件为粒度，为每个前端 UI 页面/组件设计对应的 **View Model**
+2. View Model 关注**用户体验和布局**，不关注业务规则——这是与领域模型的根本区别
+3. 分析 View Model 与消息契约（DTO）之间的不匹配，定义转换规则：
+   - 字段重命名、类型转换
+   - 从多个 DTO 聚合字段
+   - 计算值的派生
+4. 输出到 model.md 的「View Model」独立章节
+
+如果 api.md 和 tech.md 中**不含** UI 相关设计，则跳过本节。
+
 ## 完成后的下一步
 
 ✅ 完成 sparrow-model @{slug} 后，请执行 **sparrow-plan @{slug}**（团队级）—— 基于 spec/api/tech/model 制订实现计划。

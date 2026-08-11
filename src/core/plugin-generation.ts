@@ -1,18 +1,14 @@
-import type { SkillPlugin } from '../plugins/types.js';
+import type { Plugin, ContributedSkill } from '../plugins/types.js';
 
-export function buildPluginSkillBody(plugin: SkillPlugin): string {
+export function buildPluginSkillBody(skill: ContributedSkill, plugin: Plugin): string {
   return [
-    `# ${plugin.commandName}`,
+    `# ${skill.commandName}`,
     '',
-    `${plugin.description}`,
+    `${skill.description}`,
     '',
-    '> This skill delegates to a bundled third-party engine. See plugin metadata below.',
+    `> 本技能是 Sparrow 框架的扩展技能（插件：${plugin.manifest.displayName} v${plugin.manifest.version}）。`,
     '',
     '---',
-    '',
-    '## 前置条件',
-    '',
-    '本技能是 Sparrow 框架的扩展技能，属于 DDD 流水线的辅助工具。',
     '',
     plugin.skillContent,
   ].join('\n');

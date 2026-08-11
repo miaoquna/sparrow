@@ -57,6 +57,15 @@ export function generateProjectMdContent(
 
 - [ ] [系统质量属性](./requirement/prd-quanlity.md) — *待生成 (sparrow-explore)*
 
+#### 1.3 UI 需求（可选）
+
+> 如果项目需要前端界面，请执行 \`/sparrow-ui\` 技能生成 UI 规格。
+> 生成的 UI 规格与原型存放于 \`docs/sparrow/ui/\` 目录。
+
+- [ ] [UI 规格](../ui/specs/) — *待生成 (sparrow-ui)*
+- [ ] [主页面原型](../ui/index.html) — *待生成 (sparrow-ui)*
+- [ ] [设计令牌](../ui/design-tokens.md) — *待生成 (sparrow-ui)*
+
 ### 2. 业务架构
 
 - [ ] [业务架构](./architecture/business.md) — *待生成 (sparrow-arch)*

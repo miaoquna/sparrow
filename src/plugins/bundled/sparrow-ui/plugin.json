@@ -1,0 +1,12 @@
+{
+  "name": "sparrow-ui",
+  "displayName": "Sparrow UI Engine",
+  "version": "2.13.0",
+  "description": "UI/UX Pro Max engine wrapped for Sparrow — provides UI design methodology, styles, palettes, and UX guidelines",
+  "engines": { "sparrow": ">=0.3.0" },
+  "contributes": {
+    "augments": [
+      { "targetSkill": "sparrow-ui" }
+    ]
+  }
+}

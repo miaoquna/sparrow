@@ -13,7 +13,7 @@ export const CONSTITUTION_BODY = `# Sparrow 约束资产宪法（Harness Constit
 
 ## 加载规则
 
-1. **按阶段加载**：每个阶段命令（sparrow-explore / sparrow-arch / sparrow-design / sparrow-model / sparrow-plan / sparrow-apply）只加载与自身阶段对应的约束文件，不加载全部。
+1. **按阶段加载**：每个阶段命令（sparrow-explore / sparrow-ui / sparrow-arch / sparrow-design / sparrow-model / sparrow-plan / sparrow-apply）只加载与自身阶段对应的约束文件，不加载全部。
 2. **优先级**：项目级约束（\`docs/sparrow/harness/\`） > 全局约束（全局配置目录下的 harness）。内容冲突时以项目级为准。
 3. **无项目级文件时**：直接使用全局级约束。
 4. **约束性质**：约束资产定义"必须做什么 / 禁止做什么"的纪律，是各阶段 skill 的行为基准。skill 中若与约束资产冲突，**以约束资产为准**。
@@ -23,11 +23,14 @@ export const CONSTITUTION_BODY = `# Sparrow 约束资产宪法（Harness Constit
 | 阶段 | 命令 | 约束文件 | 说明 |
 |------|------|---------|------|
 | 需求探索 | sparrow-explore | explore/requirements.md | 业务服务识别与需求文档纪律 |
+| UI 设计（可选） | sparrow-ui | ui/requirements.md | 用户画像、用户旅程与 UI 页面定义纪律 |
 | 业务架构 | sparrow-arch（阶段一） | arch/business.md | 子领域划分纪律 |
 | 应用架构 | sparrow-arch（阶段二） | arch/application.md | 限界上下文与通信纪律 |
+| 前端架构（可选） | sparrow-arch（前端） | arch/frontend.md | 前端架构约束（微前端、分层、目录结构） |
 | API 设计 | sparrow-design | design/api-design.md | 服务契约与 API 定义纪律 |
 | 领域建模 | sparrow-model | model/architecture.md | DDD 四层结构与角色构造型纪律 |
 | 领域建模 | sparrow-model | model/domain-modeling.md | 静态/动态建模与 OOP 纪律 |
+| 领域建模 | sparrow-model | model/view-modeling.md | View Model 建模纪律（UI 存在时生效） |
 | 代码实现 | sparrow-apply | apply/implementation.md | 代码生成与封装纪律 |
 
 ## 全局通用纪律（所有阶段适用）

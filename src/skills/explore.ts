@@ -504,7 +504,10 @@ sparrow-explore 分为两个阶段：
 
 ## 完成后的下一步
 
-✅ 完成 sparrow-explore 后，请执行 **sparrow-arch**（产品级）—— 基于 prd-business.md 和 prd-quanlity.md，划分子领域并映射限界上下文，定义系统的业务架构和应用架构。`;
+✅ 完成 sparrow-explore 后，请根据项目需要选择下一步：
+
+- **如果需要前端界面开发**：请执行 **/sparrow-ui**（产品级）—— 根据需求文档生成前端 UI 规格、原型页面和设计令牌。完成后再执行 **/sparrow-arch**。
+- **如果不需要前端开发**：跳过 sparrow-ui，直接执行 **/sparrow-arch**（产品级）—— 基于 prd-business.md 和 prd-quanlity.md，划分子领域并映射限界上下文，定义系统的业务架构和应用架构。`;
 
 export function register(): void {
   registerSkillTemplate('sparrow-explore', () => EXPLORE_BODY);

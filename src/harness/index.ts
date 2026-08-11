@@ -9,11 +9,14 @@
 
 import { CONSTITUTION_BODY } from './constitution.js';
 import { EXPLORE_REQUIREMENTS_BODY } from './explore-requirements.js';
+import { UI_REQUIREMENTS_BODY } from './ui-requirements.js';
 import { ARCH_BUSINESS_BODY } from './arch-business.js';
 import { ARCH_APPLICATION_BODY } from './arch-application.js';
+import { ARCH_FRONTEND_BODY } from './arch-frontend.js';
 import { DESIGN_API_BODY } from './design-api.js';
 import { MODEL_ARCHITECTURE_BODY } from './model-architecture.js';
 import { MODEL_DOMAIN_BODY } from './model-domain.js';
+import { MODEL_VIEW_BODY } from './model-view.js';
 import { APPLY_IMPLEMENTATION_BODY } from './apply-implementation.js';
 
 /**
@@ -41,11 +44,14 @@ export interface HarnessFile {
 export const HARNESS_FILES: HarnessFile[] = [
   { relPath: 'constitution.md', title: '约束资产宪法', body: CONSTITUTION_BODY },
   { relPath: 'explore/requirements.md', title: '需求探索约束', body: EXPLORE_REQUIREMENTS_BODY },
+  { relPath: 'ui/requirements.md', title: 'UI 需求约束', body: UI_REQUIREMENTS_BODY },
   { relPath: 'arch/business.md', title: '业务架构约束', body: ARCH_BUSINESS_BODY },
   { relPath: 'arch/application.md', title: '应用架构约束', body: ARCH_APPLICATION_BODY },
+  { relPath: 'arch/frontend.md', title: '前端架构约束', body: ARCH_FRONTEND_BODY },
   { relPath: 'design/api-design.md', title: 'API 设计约束', body: DESIGN_API_BODY },
   { relPath: 'model/architecture.md', title: '领域建模架构约束', body: MODEL_ARCHITECTURE_BODY },
   { relPath: 'model/domain-modeling.md', title: '领域建模约束', body: MODEL_DOMAIN_BODY },
+  { relPath: 'model/view-modeling.md', title: 'View Model 建模约束', body: MODEL_VIEW_BODY },
   { relPath: 'apply/implementation.md', title: '代码实现约束', body: APPLY_IMPLEMENTATION_BODY },
 ];
 
