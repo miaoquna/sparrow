@@ -6,7 +6,6 @@ import { register as registerPlan } from './plan.js';
 import { register as registerApply } from './apply.js';
 import { register as registerArchive } from './archive.js';
 import { register as registerHarness } from './harness.js';
-import { register as registerUi } from './ui.js';
 import { registerPluginSkills } from '../core/config.js';
 import { getSkillPlugins } from '../plugins/index.js';
 import { registerPluginSkillTemplates } from '../core/skill-generation.js';
@@ -16,7 +15,6 @@ export function initializeSkills(): void {
   loadBundledPlugins();
 
   registerExplore();
-  registerUi();
   registerArch();
   registerDesign();
   registerModel();

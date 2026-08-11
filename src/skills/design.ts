@@ -15,20 +15,27 @@ const DESIGN_BODY = `# Sparrow Design — API 契约与技术选型
 
 \`\`\`
 当前步骤：sparrow-design（第 3 步 / 共 6 步）
-所属层级：团队级（team-level），针对特定限界上下文
+所属层级：团队级（team-level），针对特定限界上下文或交互上下文
 前置条件：
-  1. docs/sparrow/architecture/application.md 必须存在
+  1. docs/sparrow/architecture/application.md 必须存在（后端 BC）
+     或 docs/sparrow/architecture/frontend.md 必须存在（交互上下文）
   2. docs/sparrow/design/{slug}/spec.md 必须存在
 下一步骤：sparrow-model @{slug}（团队级）
 \`\`\`
 
 **前置条件检查**：
-- 如果 \`docs/sparrow/architecture/application.md\` 不存在，请提示用户先执行 **sparrow-arch**
-- 如果 \`docs/sparrow/design/{slug}/spec.md\` 不存在，请提示用户先执行 **sparrow-arch**（它会创建各限界上下文的 spec 切片）
-- 如果用户未指定限界上下文，请列出可用的限界上下文让用户选择
-- 如果目标文件已存在，请参考下方"输出文件存在性检查"章节处理
+- 如果 \`docs/sparrow/architecture/application.md\` 不存在且 \`docs/sparrow/architecture/frontend.md\` 不存在，请提示用户先执行 **sparrow-arch**
+- 如果 \`docs/sparrow/design/{slug}/spec.md\` 不存在，请提示用户先执行 **sparrow-arch**
+- 如果用户未指定 slug，请列出可用的 slug 让用户选择（从 project.md 中读取所有 BC 和交互上下文）
 
-{{HARNESS}}
+### Slug 类型判定
+
+在执行 design 之前，先判定当前 slug 是**后端限界上下文**还是**交互上下文**：
+
+1. 读取 \`docs/sparrow/project.md\` 的「限界上下文设计」部分
+2. 查找当前 slug 对应的子章节
+3. 如果标注了 **— *交互上下文*** 标记 → 当前 slug 是交互上下文，执行下方「交互上下文设计」分支
+4. 否则 → 当前 slug 是后端 BC，执行下方「后端限界上下文设计」分支（保持现有逻辑）
 
 ---
 
@@ -113,6 +120,10 @@ const DESIGN_BODY = `# Sparrow Design — API 契约与技术选型
 > **revise 模式扩展（仅活动变更时）**：当处于 revise 模式（判定见 sparrow-arch「变更处理 / revise」章节）更新已有文档时，在元数据块**追加可选字段** \`change-id: {change-id}\`（必要时加 \`supersedes: {被取代版本}\`）。基线（无活动变更）**不追加**这些字段，输出与未引入前一致。
 
 ---
+
+## 后端限界上下文设计
+
+> 以下内容适用于**后端限界上下文**。若当前 slug 为交互上下文，请跳至下方「交互上下文设计」章节。
 
 ## 角色定义
 
@@ -459,25 +470,143 @@ ExtSys <<-- EVT_OrderPlaced : subscribes
 - [ ] **项目级 \`docs/sparrow/api.md\` 已更新**，当前 BC 的 API 已录入
 - [ ] 跨上下文调用关系和通信协议清晰
 
-## 🖥️ 前端架构（读取 frontend.md）
+---
 
-读取 \`docs/sparrow/architecture/frontend.md\`。如果文件存在：
+## 交互上下文设计
 
-### API 设计适配
+> 以下内容适用于**交互上下文**。仅当当前 slug 在 project.md 中标注为「交互上下文」时执行。
 
-> 📐 约束参见 \`design/api-design.md\` harness 中「前端架构」章节。
+### 角色定义
 
-1. **技术选型（tech.md）**：在 tech.md 中增加与 UI 相关的技术决策（前端框架、状态管理、构建工具等）。优先级：全局 harness → 项目 harness → 询问用户。
-2. **序列图**：从 UI 页面（边界对象）开始绘制，流程为 **UI 页面 → 边缘层 → 目标限界上下文**。借鉴 ICONIX 方法论——UI 页面作为边界对象，将用户操作转化为对后端服务契约的调用。
-3. **边缘层适配**：
-   - 如果 UI 的 View Model 与 BC 的 DTO 不匹配 → 增加 UI 适配对象（数据重排/字段融合/缺失字段推导）
-   - 如果 UI 操作需要同时调用多个 BC → 增加服务聚合对象（编排多个调用、组合响应）
+你是一名**前端架构师与 BFF 设计师**，负责为交互上下文生成：
+1. **BFF API 契约文档（api.md）**：包含 BFF 聚合端点定义、页面级 ViewModel 接口和聚合序列图
+2. **前端技术选型文档（tech.md）**：详细的前端和 BFF 技术栈配置
 
-如果 \`frontend.md\` 不存在，跳过本节。
+### 核心原则
+
+1. **不依赖 BC API**：交互上下文的 design 从自身 \`spec.md\` 和 \`frontend.md\` 出发，不读取任何 BC 的 \`api.md\`。契约一致性由 sparrow-arch 阶段的绑定表保证。
+2. **页面驱动**：BFF 端点设计以 UI 页面为粒度，一个页面一个 BFF 端点（或一组紧密关联的端点）。
+3. **纯聚合不侵入**：BFF 只做数据聚合和格式转换，不做业务逻辑。
+
+### 输入文档
+
+| 文档 | 路径 | 用途 |
+|------|------|------|
+| 交互上下文 spec 切片 | \`docs/sparrow/design/{ui-slug}/spec.md\` | 当前交互上下文关联的业务服务定义 |
+| 前端架构文档 | \`docs/sparrow/architecture/frontend.md\` | 契约绑定表 + 技术选型决策 |
+| UI 规格文档 | \`docs/sparrow/requirement/ui/ui-spec.md\` | UI 页面清单、用户旅程、交互方式 |
+
+### 设计步骤
+
+#### 步骤1：分析契约绑定表
+
+1. 读取 \`frontend.md\` 中的「API 契约绑定」表
+2. 按页面分组，识别每个页面需要聚合哪些 BC 的业务服务
+3. 确定哪些交互需要 BFF 聚合（调用多个 BC）vs 直接透传（调用单个 BC）
+
+#### 步骤2：设计 BFF 聚合端点
+
+为每个 UI 页面设计 BFF 端点，格式：
+
+\`\`\`markdown
+### BFF: GET /bff/{resource}/{action}
+
+- **服务页面**：{页面名称}
+- **聚合的 BC 调用**：
+  | 顺序 | 目标 BC | BC 业务服务 | 请求参数 | 降级策略 |
+  |------|--------|------------|---------|---------|
+  | 1 | {bc-slug} | {SERVICE-ID} | {参数} | {失败时的降级方案} |
+  | 2 | {bc-slug} | {SERVICE-ID} | {参数} | {失败时的降级方案} |
+- **请求参数**：{聚合后的请求格式}
+- **响应格式**：{聚合后的响应格式——ViewModel}
+\`\`\`
+
+#### 步骤3：设计 ViewModel
+
+为每个页面定义 ViewModel：
+
+\`\`\`markdown
+### ViewModel: {PageName}VM
+
+| 字段名 | 类型 | 来源（BC 业务服务 / 输出字段） | 转换规则 | 说明 |
+|--------|------|-------------------------------|---------|------|
+| {field} | {type} | {BC.SERVICE.output_field} | {转换规则或"直接映射"} | {字段含义} |
+\`\`\`
+
+#### 步骤4：绘制 BFF 聚合序列图
+
+\`\`\`mermaid
+sequenceDiagram
+    participant UI as UI 页面 (客户端)
+    participant BFF as BFF 聚合层
+    participant BC1 as {BC1 名称}
+    participant BC2 as {BC2 名称}
+
+    UI->>BFF: {BFF 端点请求}
+    BFF->>BC1: 调用 {SERVICE-ID}
+    BC1-->>BFF: {响应数据}
+    BFF->>BC2: 调用 {SERVICE-ID}
+    BC2-->>BFF: {响应数据}
+    Note over BFF: BFF 聚合转换
+    BFF-->>UI: {统一的 ViewModel 响应}
+\`\`\`
+
+### api.md 结构（交互上下文）
+
+\`\`\`markdown
+# BFF API 契约 — {交互上下文中文名称}
+
+## 1. 交互上下文概述
+## 2. BFF 聚合端点列表
+## 3. BFF 端点详细定义
+### 3.1 {端点名称}
+#### 聚合的 BC 调用
+#### BFF 聚合序列图
+#### 请求定义
+#### 响应定义（ViewModel）
+## 4. ViewModel 定义汇总
+## 5. BFF 组件图（PlantUML）
+\`\`\`
+
+### tech.md 结构（交互上下文）
+
+\`\`\`markdown
+# 技术选型 — {交互上下文中文名称}
+
+## 1. 客户端技术栈
+| 层 | 选型 | 版本 | 说明 |
+|------|------|------|------|
+| 框架 | | | |
+| 构建工具 | | | |
+| 语言 | | | |
+| UI 组件库 | | | |
+| 状态管理 | | | |
+| 路由 | | | |
+
+## 2. BFF 聚合层技术栈
+| 层 | 选型 | 版本 | 说明 |
+|------|------|------|------|
+| 运行时 | | | |
+| 框架 | | | |
+| HTTP 客户端 | | | |
+
+## 3. 构建、测试与部署
+## 4. 风险与待决事项
+\`\`\`
+
+### 质量检查清单（交互上下文）
+
+- [ ] BFF 端点数量与 UI 页面一一对应
+- [ ] 每个 BFF 端点都标注了聚合的 BC 业务服务
+- [ ] 每个聚合调用都定义了降级策略
+- [ ] ViewModel 字段与 BC 业务服务输出一致（源自同一 spec.md）
+- [ ] BFF 聚合序列图正确展示了 UI → BFF → BC 的调用链
+- [ ] tech.md 覆盖了客户端和 BFF 两层技术栈
+- [ ] 未读取任何 BC 的 api.md（契约一致性由绑定表保证）
 
 ## 完成后的下一步
 
-✅ 完成 sparrow-design @{slug} 后，请执行 **sparrow-model @{slug}**（团队级）—— 基于 api.md 中的 API 定义，将每个 API 作为动态领域模型任务树的第一级入口，进行领域建模。
+✅ 完成 sparrow-design @{slug} 后，请执行 **sparrow-model @{slug}**（团队级）—— 基于 api.md 中的定义，进行领域建模（后端 BC）或 ViewModel 建模（交互上下文）。
 
 {{PLUGIN:archify}}`;
 

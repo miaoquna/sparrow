@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **Interaction Context** — a first-class architecture concept parallel to Bounded Contexts. Each product has exactly one Interaction Context encompassing all client UIs and BFF aggregation. It shares the same `design → model → plan → apply` pipeline as backend BCs, yet is fully orthogonal (no mutual dependencies, capable of parallel execution).
+  - 新增**交互上下文（Interaction Context）**：与后端限界上下文同级的架构概念。每个产品有且仅有一个交互上下文，涵盖全部客户端 UI + BFF 聚合层。共享同一套 `design → model → plan → apply` 命令体系，但与其他 BC 完全正交——无相互依赖，可以并行执行。
+- **UI design exploration** integrated into `/sparrow-explore` as an optional phase 3. Uses Grill Me to explore personas, user journeys, page concepts, visual preferences, and device types. Pure UX exploration — no bounded context association.
+  - UI 设计探索合并入 `/sparrow-explore` 的可选阶段三。使用 Grill Me 模式探索用户画像、旅程、页面概念、视觉偏好和客户端类型。纯 UX 探索，不关联 BC。
+- **BFF aggregation layer** explicitly modeled in the frontend architecture. BFF endpoints aggregate multiple BC APIs per UI page, with formal degradation strategies. BFF code generated to `edge/bff/`.
+  - **BFF 聚合层**在前端架构中显式建模。BFF 端点按 UI 页面聚合多个 BC API，定义正式降级策略。BFF 代码生成到 `edge/bff/`。
+- **API contract binding tables** generated in `sparrow-arch` as the sole synchronization point between Interaction Context and backend BCs. Contract consistency guaranteed by both sides deriving from the same business service definitions — no mutual file reading required.
+  - **API 契约绑定表**在 `sparrow-arch` 中生成，作为交互上下文与后端 BC 之间的唯一同步点。双方从同一业务服务定义推导，契约天然一致——无需互读对方产物。
+- **Technology selection dialogues** in `sparrow-arch` frontend architecture phase: interactive client framework selection (Web/Mobile/QT/Electron) and BFF selection (RESTful/GraphQL/same-process), each with recommended+alternative options.
+  - `sparrow-arch` 前端架构阶段新增**交互式技术选型**：客户端方案（Web/移动端/QT/Electron）和 BFF 方案（RESTful/GraphQL/同进程），每种方案提供推荐+备选。
+
+### Changed
+
+- **`/sparrow-ui` removed** as a standalone command. UI design exploration is now an optional phase in `/sparrow-explore`, and frontend architecture design is an optional phase in `/sparrow-arch`.
+  - **移除 `/sparrow-ui` 独立命令**。UI 设计探索作为 `/sparrow-explore` 的可选阶段，前端架构设计作为 `/sparrow-arch` 的可选阶段。
+- **Frontend code organization**: changed from `frontend/{bc-slug}/` to `frontend/features/{feature-name}/`, reflecting that frontend pages span multiple BCs, not mirror BC boundaries.
+  - **前端代码组织**：从 `frontend/{bc-slug}/` 改为 `frontend/features/{feature-name}/`，反映前端页面跨 BC 的现实，而非镜像 BC 边界。
+- All team-level commands (`design`, `model`, `plan`, `apply`) now detect slug type from `project.md` and branch accordingly: backend BC logic (unchanged) vs. Interaction Context logic (new).
+  - 所有团队级命令（`design`, `model`, `plan`, `apply`）现在从 `project.md` 检测 slug 类型并分支处理：后端 BC 逻辑（不变）vs. 交互上下文逻辑（新增）。
+- **UI output path** changed from `docs/sparrow/ui/` to `docs/sparrow/requirement/ui/`, reflecting its nature as a requirement-level artifact.
+  - **UI 产出路径**从 `docs/sparrow/ui/` 改为 `docs/sparrow/requirement/ui/`，体现其需求层产物的性质。
+
+### Removed
+
+- Per-BC frontend-aware logic removed from BC-level `design`, `model`, `plan`, and `apply`. All frontend concerns now handled exclusively by Interaction Context.
+  - 从 BC 级的 `design`、`model`、`plan`、`apply` 中移除前端感知逻辑。所有前端关注点完全由交互上下文独立处理。
+- `sparrow-ui` standalone skill and its harness (`ui/requirements.md`) deleted. UI exploration constraints merged into `explore/requirements.md`.
+  - 删除 `sparrow-ui` 独立技能及其 harness (`ui/requirements.md`)。UI 探索约束合并入 `explore/requirements.md`。
+
+---
+
 ## [0.2.1] - 2026-08-07
 
 ### Added

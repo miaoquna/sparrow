@@ -1,47 +1,27 @@
-# Sparrow UI — 基于 DDD 的前端界面生成
+# Sparrow UI Exploration — UI 设计探索引擎
 
-## 执行顺序检查
-
-```
-当前步骤：sparrow-ui（第 1.5 步 / 共 7 步）
-所属层级：产品级（product-level）
-前置条件：
-  1. docs/sparrow/requirement/prd-business.md 必须存在
-  2. docs/sparrow/requirement/prd-quanlity.md （若存在则必须读取）
-下一步骤：sparrow-arch（产品级）
-```
-
-> ⚠️ 本步骤为**可选步骤**。如果项目不需要前端界面，可跳过，直接执行 sparrow-arch。
-
-**前置条件检查**：
-- 如果 prd-business.md 不存在，请提示用户先执行 sparrow-explore
-
----
+> 本引擎为 sparrow-explore 的阶段三（UI 设计探索）提供增强的 UI 设计能力。
 
 ## 输出目录
 
 所有 UI 相关产出统一存放于：
 
 \`\`\`
-docs/sparrow/ui/
-├── ui-spec.md           # 统一的 UI 规格文档（按角色分章节）
-├── design-tokens.md     # 设计令牌（色彩、字体、间距）
-├── index.html           # 主页面原型
-├── components/          # 共享组件库
-│   └── component-library.md
-├── design-tokens.md    # 设计令牌（色彩、字体、间距）
-└── mockups/            # 视觉稿/截图
-```
+docs/sparrow/requirement/ui/
+├── ui-spec.md                    # 统一的 UI 规格文档（按角色分章节）
+├── design-tokens.md              # 设计令牌（色彩、字体、间距）
+├── components/
+│   └── component-library.md      # 共享组件库
+└── prototypes/
+    ├── index.html                # 主页面原型
+    └── {page-name}.html          # 各页面原型
+\`\`\`
 
 ---
 
 ## UI 需求分析
 
-根据 prd-business.md 中的业务服务定义，分析前端 UI 需求：
-
-1. 确定需要哪些前端页面（基于业务服务的用户交互入口）
-2. 确定页面的导航结构和信息架构
-3. 确定每个页面的核心交互流程
+根据 prd-business.md 中的业务服务定义和阶段三 Grill Me 探索结果，分析和生成前端 UI 设计内容。
 
 ---
 
@@ -51,8 +31,8 @@ docs/sparrow/ui/
 
 ### 操作步骤
 
-1. 根据 UI 需求分析结果，使用 UI/UX Pro Max 生成 UI 设计规格
-2. 为每个页面生成原型 HTML（保存到 docs/sparrow/ui/）
+1. 根据 UI 需求分析结果和阶段三 Grill Me 探索中确认的内容，使用 UI/UX Pro Max 生成 UI 设计规格
+2. 为每个页面生成原型 HTML（保存到 docs/sparrow/requirement/ui/prototypes/）
 3. 生成设计令牌（design-tokens.md）
 4. 生成组件库文档（components/component-library.md）
 

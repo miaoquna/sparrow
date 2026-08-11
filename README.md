@@ -6,7 +6,7 @@
 >
 > The npm package is published as **`sparrow-ddd`**.
 
-Sparrow transforms raw business requirements into production-ready code through a structured 6-step Domain-Driven Design (DDD) pipeline. It generates **skills and commands** for AI coding assistants (Claude Code, OpenCode, Cursor), letting each host's native AI capabilities guide you from business analysis to code generation — no multi-agent framework required.
+Sparrow transforms raw business requirements into production-ready code through a structured DDD pipeline. It introduces the concept of **Interaction Context** — a first-class architecture concept parallel to Bounded Contexts that handles all frontend UI and BFF aggregation. Both backend BCs and the Interaction Context share the same standardized `design → model → plan → apply` workflow, yet remain completely orthogonal — no mutual dependencies, capable of parallel execution.
 
 > 📜 Version history and highlights: see the [CHANGELOG](./CHANGELOG.md) and [GitHub Releases](https://github.com/agiledon/sparrow/releases).
 
@@ -126,14 +126,14 @@ Invoke each skill in order as a slash command in your AI tool:
 | Step | Command | Level | What it does |
 |------|---------|-------|--------------|
 | 0 | `/sparrow-harness` | Helper | View, add, and maintain constraint assets (harness) — available at any time |
-| 1 | `/sparrow-explore` | Product | Interactive requirement exploration (Grill Me) + generate functional & quality requirement docs |
-| 2 | `/sparrow-arch` | Product | Define business architecture (subdomains) + application architecture (bounded contexts) |
-| 3 | `/sparrow-design @{slug}` | Team | Define API contracts and select tech stack for a bounded context |
-| 4 | `/sparrow-model @{slug}` | Team | Three-stage domain modeling: static (class diagram + OOP principles) + dynamic (sequence diagram) + integration |
+| 1 | `/sparrow-explore` | Product | Interactive requirement exploration (Grill Me) + generate functional & quality requirement docs + [optional] UI design exploration |
+| 2 | `/sparrow-arch` | Product | Define business architecture (subdomains) + application architecture (bounded contexts) + [if UI exists] frontend architecture with Interaction Context |
+| 3 | `/sparrow-design @{slug}` | Team | Define API contracts and tech stack for a bounded context or Interaction Context |
+| 4 | `/sparrow-model @{slug}` | Team | Domain modeling (backend BC) or ViewModel + component modeling (Interaction Context) |
 | 5 | `/sparrow-plan @{slug}` | Team | Devise implementation plan with task checklist |
-| 6 | `/sparrow-apply @{slug}` | Team | Generate DDD-structured code with TDD + OOP encapsulation rules |
+| 6 | `/sparrow-apply @{slug}` | Team | Generate DDD-structured code (backend) or frontend + BFF code (Interaction Context) |
 
-> **Important**: Steps must run in order. Each skill checks that prerequisites exist and will tell you which step to run first if the order is wrong.
+> **Important**: Product-level steps (1-2) run once. Team-level steps (3-6) run per slug — all contexts (backend BCs + Interaction Context) share the same commands and are fully orthogonal. They can execute in any order, even in parallel.
 
 ### 4. Iterate and refine
 
@@ -151,53 +151,53 @@ After any step, you can:
 **Output**:
 - `docs/sparrow/requirement/prd-business.md` — structured business service definitions
 - `docs/sparrow/requirement/prd-quanlity.md` — system quality attributes (performance, security, high availability, etc.)
+- `docs/sparrow/requirement/ui/` — \[optional\] UI design specs, design tokens, component library, and interactive HTML prototypes
 
-sparrow-explore now uses a **Grill Me** interactive exploration pattern: the AI asks one question at a time with a recommended answer, and you confirm (yes/no/modify). Questions cover six dimensions: actors, core flows, business rules, boundary conditions, exception scenarios, and quality attributes. After exploration, a quick summary is provided, and two spec documents are generated — functional requirements as business services, and quality attributes covering only the dimensions actually required.
+sparrow-explore uses a **Grill Me** interactive exploration pattern in two phases. **Phase 1**: Business requirements — covers actors, core flows, business rules, boundary conditions, exception scenarios, and quality attributes. **Phase 2**: After generating the requirement docs, optionally enters **UI design exploration** (also Grill Me), producing user personas, journeys, page concepts, and visual preferences — pure UX, no bounded context associations.
 
 ### Step 2: sparrow-arch (Product-level)
 
-**Input**: `requirement/prd-business.md` + `requirement/prd-quanlity.md`  
+**Input**: `requirement/prd-business.md` + `requirement/prd-quanlity.md` + \[optional\] `requirement/ui/`  
 **Output**:
 - `docs/sparrow/architecture/business.md` — subdomains (core/supporting/generic) + Mermaid business architecture diagram
 - `docs/sparrow/architecture/application.md` — bounded contexts, context mapping, four-layer application architecture diagram
 - `docs/sparrow/design/{slug}/spec.md` — per-context sliced business specs
+- `docs/sparrow/architecture/frontend.md` — \[if UI exists\] frontend architecture with Interaction Context definition, tech stack selection, BFF design, and API contract binding tables
 
-Classifies subdomains into core (competitive advantage), supporting (business-essential), and generic (buy vs build). Maps them to bounded contexts with relationship patterns (ACL, OHS, Conformist, Customer-Supplier, Shared Kernel, Publisher-Subscriber, Separate Ways). Enforces the autonomy principle (minimally complete, self-fulfilling domain knowledge with logical — not necessarily microservice — isolation) and cross-BC communication discipline (same-process: southbound Client → northbound local service; cross-process: public API / domain events; never direct access to another BC's domain objects).
+Classifies subdomains into core, supporting, and generic. Maps them to bounded contexts with relationship patterns. **If UI requirements exist**, additionally generates frontend architecture including: interactive tech stack selection (Web/Mobile/QT/BFF), **Interaction Context** definition (a BC-peer encompassing all UI + BFF aggregation), and **API contract binding tables** — the sole synchronization point that guarantees frontend-backend contract consistency, enabling all subsequent BC and Interaction Context design/model/plan/apply steps to run independently without mutual dependencies.
 
-### Step 3: sparrow-design (Team-level, per bounded context)
+### Step 3: sparrow-design (Team-level, per context)
 
-**Input**: `architecture/application.md` + `design/{slug}/spec.md`  
+**Input**: `design/{slug}/spec.md` + architecture docs  
 **Output**:
-- `docs/sparrow/design/{slug}/api.md` — service contracts with Mermaid sequence diagrams and RESTful API definitions
-- `docs/sparrow/design/{slug}/tech.md` — technology stack selection (language, framework, database, messaging, testing)
+- `docs/sparrow/design/{slug}/api.md` — service contracts (backend BC) or BFF API specs with ViewModel interfaces (Interaction Context)
+- `docs/sparrow/design/{slug}/tech.md` — technology stack selection
 
-Interactive tech stack selection: choose from Java (Spring Boot), Python (FastAPI), Node.js/TypeScript (Express/NestJS), Go (chi/net/http), or Rust (Axum). Each language gets multiple concrete stack options.
+For **backend BCs**: interactive tech stack selection (Java/Python/Node.js/Go/Rust/REST/gRPC). For **Interaction Context**: BFF aggregation endpoint design, ViewModel definition, and frontend + BFF tech stack selection. The Interaction Context design does NOT read any BC's api.md — contract consistency is guaranteed by the binding table in frontend.md.
 
-### Step 4: sparrow-model (Team-level)
+### Step 4: sparrow-model (Team-level, per context)
 
 **Input**: `spec.md` + `api.md` + `tech.md`  
-**Output**: `docs/sparrow/design/{slug}/model.md` — complete domain model with three stages
+**Output**: `docs/sparrow/design/{slug}/model.md`
 
-- **Stage 1 — Static Modeling**: Unified language glossary, entity/value object identification, aggregate root operation definitions guided by OOP principles (Information Expert, Law of Demeter, anti-anemic model, encapsulation). PlantUML class diagram with private fields and business-focused operations, no unnecessary getters/setters.
-- **Stage 2 — Dynamic Modeling**: API-driven task decomposition trees, role stereotype assignment (Command/Query/AppService/DomainService/Aggregate/Port), PlantUML sequence diagrams with color-coded participants and strict collaboration constraints.
-- **Stage 3 — Static-Dynamic Integration**: Cross-verify operations extracted from sequence diagrams against the static model. Sequence diagram operations take precedence — update the class diagram to ensure complete consistency between structure and behavior.
+For **backend BCs**: three-stage domain modeling (static class diagram + dynamic sequence diagram + integration). For **Interaction Context**: ViewModel static models, component tree models, and data flow models.
 
-### Step 5: sparrow-plan (Team-level)
+### Step 5: sparrow-plan (Team-level, per context)
 
 **Input**: `spec.md` + `api.md` + `tech.md` + `model.md`  
 **Output**: `docs/sparrow/design/{slug}/plan.md` — ordered implementation plan
 
-Creates tasks with `[ ]` checkboxes, sorted by DDD layer dependency (domain → infrastructure → application → api). Each task specifies: executor (`dev` for product code with TDD, `qa` for integration tests), parallelizability, and step-level granularity matching aggregate boundaries.
+For **backend BCs**: tasks organized by DDD layer dependency. For **Interaction Context**: tasks organized by page/feature with parallelization markers, covering frontend component development, BFF aggregation implementation, and integration testing.
 
-### Step 6: sparrow-apply (Team-level)
+### Step 6: sparrow-apply (Team-level, per context)
 
 **Input**: `plan.md`  
 **Output**:
-- `code/{slug}/` — DDD four-layer module (api/application/domain/infrastructure)
+- `backend/{slug}/` — DDD four-layer module (api/application/domain/infrastructure) for backend BCs
 - `integration-tests/{slug}/` — isolated integration/API tests
 - `docs/sparrow/design/{slug}/code_review.md` — review report
 
-Drives three roles: Development Engineer (DDD code + domain TDD), QA Engineer (integration/API tests), and Code Review. Follows language-specific coding standards, directory layouts, and OOP encapsulation rules (no unnecessary getters/setters, rich domain model, Law of Demeter). Checks off completed steps in `plan.md`.
+For **Interaction Context**, generates frontend code to `frontend/features/` and BFF aggregation code to `edge/bff/`.
 
 ## Output Structure
 
@@ -208,10 +208,16 @@ your-project/
 ├── docs/sparrow/
 │   ├── requirement/
 │   │   ├── prd-business.md               # sparrow-explore (functional requirements)
-│   │   └── prd-quanlity.md               # sparrow-explore (quality attributes)
+│   │   ├── prd-quanlity.md               # sparrow-explore (quality attributes)
+│   │   └── ui/                            # [optional] sparrow-explore (UI design exploration)
+│   │       ├── ui-spec.md
+│   │       ├── design-tokens.md
+│   │       ├── components/
+│   │       └── prototypes/
 │   ├── architecture/
-│   │   ├── business.md                   # sparrow-arch (phase 1)
-│   │   └── application.md                # sparrow-arch (phase 2)
+│   │   ├── business.md                   # sparrow-arch (subdomains)
+│   │   ├── application.md                # sparrow-arch (bounded contexts)
+│   │   └── frontend.md                   # [optional] sparrow-arch (frontend + Interaction Context)
 │   ├── project.md                        # Project catalog index
 │   └── design/{english-slug}/
 │       ├── spec.md                       # Per-context sliced spec
@@ -220,11 +226,15 @@ your-project/
 │       ├── model.md                      # sparrow-model
 │       ├── plan.md                       # sparrow-plan
 │       └── code_review.md                # sparrow-apply
-├── backend/{slug}/                       # sparrow-apply
+├── backend/{slug}/                       # sparrow-apply (backend BC)
 │   ├── api/command/, query/, dto/
 │   ├── application/
 │   ├── domain/aggregate/, entity/, valueobject/, service/
 │   └── infrastructure/port/, adapter/
+├── frontend/                             # sparrow-apply (Interaction Context)
+│   ├── features/{name}/
+│   └── shared/
+├── edge/bff/                             # sparrow-apply (BFF aggregation)
 ├── integration-tests/{slug}/             # sparrow-apply (qa tasks)
 └── sparrow.json                          # Project config
 ```
@@ -247,12 +257,14 @@ The global harness contains one file per stage plus a constitution:
 ```
 harness/
 ├── constitution.md            # Aggregate index: stage → file → description
-├── explore/requirements.md    # Business service identification discipline
+├── explore/requirements.md    # Business service identification + UI design exploration discipline
 ├── arch/business.md           # Subdomain classification discipline
 ├── arch/application.md        # Bounded context, autonomy & communication discipline
+├── arch/frontend.md           # Frontend architecture & Interaction Context discipline
 ├── design/api-design.md       # Service contract & API discipline
 ├── model/architecture.md      # Four layers, stereotypes, PO & call rules
 ├── model/domain-modeling.md   # Aggregates & OOP discipline
+├── model/view-modeling.md     # View Model modeling discipline (Interaction Context)
 └── apply/implementation.md    # Code generation & encapsulation discipline
 ```
 
@@ -359,4 +371,4 @@ MIT
 
 ---
 
-🪶 *From business requirements to production code, one spec at a time.*
+🪶 *From business requirements to production code — backend and frontend, unified into one spec-driven flow.*

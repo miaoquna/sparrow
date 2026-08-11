@@ -59,12 +59,13 @@ export function generateProjectMdContent(
 
 #### 1.3 UI 需求（可选）
 
-> 如果项目需要前端界面，请执行 \`/sparrow-ui\` 技能生成 UI 规格。
-> 生成的 UI 规格与原型存放于 \`docs/sparrow/ui/\` 目录。
+> 如果项目需要前端界面，请在执行 \`/sparrow-explore\` 时选择继续 UI 设计探索。
+> 生成的 UI 规格与原型存放于 \`docs/sparrow/requirement/ui/\` 目录。
 
-- [ ] [UI 规格](../ui/ui-spec.md) — *待生成 (sparrow-ui)*
-- [ ] [主页面原型](../ui/index.html) — *待生成 (sparrow-ui)*
-- [ ] [设计令牌](../ui/design-tokens.md) — *待生成 (sparrow-ui)*
+- [ ] [UI 规格](./requirement/ui/ui-spec.md) — *待生成 (sparrow-explore)*
+- [ ] [设计令牌](./requirement/ui/design-tokens.md) — *待生成 (sparrow-explore)*
+- [ ] [组件库](./requirement/ui/components/component-library.md) — *待生成 (sparrow-explore)*
+- [ ] [主页面原型](./requirement/ui/prototypes/index.html) — *待生成 (sparrow-explore)*
 
 ### 2. 系统架构
 
@@ -96,10 +97,9 @@ export function generateProjectMdContent(
 
 ## 下一步
 
-1. 执行 **/sparrow-explore** — 从原始需求中识别业务服务
-2. （可选）执行 **/sparrow-ui** — 生成前端 UI 规格与原型
-3. 执行 **/sparrow-arch** — 划分子领域，定义业务架构、应用架构（如有 UI 则同时生成前端架构）
-4. 对每个限界上下文依次执行：**design → model → plan → apply**
+1. 执行 **/sparrow-explore** — 从原始需求中识别业务服务（如有需要，在技能中继续 UI 设计探索）
+2. 执行 **/sparrow-arch** — 划分子领域，定义业务架构、应用架构（如有 UI 则同时生成前端架构）
+3. 对每个限界上下文（含交互上下文）依次执行：**design → model → plan → apply**
 `;
 }
 
@@ -116,8 +116,7 @@ export function getProjectMdPath(outputBase: string): string {
  */
 export function getProjectMdUpdateBlock(skillId: string): string {
   const skillDocMap: Record<string, string> = {
-    'sparrow-explore': 'requirement/prd-business.md 和 requirement/prd-quanlity.md',
-    'sparrow-ui': 'ui/ui-spec.md、ui/design-tokens.md 和 ui/index.html',
+    'sparrow-explore': 'requirement/prd-business.md、requirement/prd-quanlity.md（若有 UI 则同时更新 requirement/ui/ 下的文档）',
     'sparrow-arch': 'architecture/business.md、architecture/application.md（如生成前端架构则同时更新 architecture/frontend.md）',
     'sparrow-design': 'design/{slug}/api.md 和 design/{slug}/tech.md',
     'sparrow-model': 'design/{slug}/model.md',

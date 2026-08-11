@@ -127,21 +127,11 @@ export const SKILLS: SkillDefinition[] = [
   {
     id: 'sparrow-explore',
     name: 'Sparrow Explore',
-    description: 'Identify and define business services from raw requirements',
+    description: 'Identify business services and explore UI design from raw requirements',
     phase: 'product',
     order: 1,
     nextSkill: 'sparrow-arch',
     commandName: 'sparrow-explore',
-    category: 'DDD',
-  },
-  {
-    id: 'sparrow-ui',
-    name: 'Sparrow UI',
-    description: 'Generate frontend UI specs, prototypes, and design tokens (optional)',
-    phase: 'product',
-    order: 1.5,
-    nextSkill: 'sparrow-arch',
-    commandName: 'sparrow-ui',
     category: 'DDD',
   },
   {

@@ -12,7 +12,7 @@ const MODEL_BODY = `# Sparrow Model — 领域建模
 
 \`\`\`
 当前步骤：sparrow-model（第 4 步 / 共 6 步）
-所属层级：团队级（team-level），针对特定限界上下文
+所属层级：团队级（team-level），针对特定限界上下文或交互上下文
 前置条件：
   1. docs/sparrow/design/{slug}/spec.md 必须存在
   2. docs/sparrow/design/{slug}/api.md 必须存在
@@ -22,8 +22,14 @@ const MODEL_BODY = `# Sparrow Model — 领域建模
 
 **前置条件检查**：
 - 如果 api.md 或 tech.md 不存在，请提示用户先执行 **sparrow-design @{slug}**
-- 如果用户未指定限界上下文，请列出可用的限界上下文让用户选择
+- 如果用户未指定 slug，请列出可用的 slug 让用户选择（从 project.md 中读取）
 - 如果目标文件已存在，请参考下方"输出文件存在性检查"章节处理
+
+### Slug 类型判定
+
+1. 读取 \`docs/sparrow/project.md\` 的「限界上下文设计」部分
+2. 如果当前 slug 标注了 **— *交互上下文*** 标记 → 执行下方「交互上下文建模」分支
+3. 否则 → 执行下方「后端限界上下文建模」分支（保持现有逻辑）
 
 {{HARNESS}}
 
@@ -104,6 +110,10 @@ const MODEL_BODY = `# Sparrow Model — 领域建模
 > **revise 模式扩展（仅活动变更时）**：当处于 revise 模式（判定见 sparrow-arch「变更处理 / revise」章节）更新已有文档时，在元数据块**追加可选字段** \`change-id: {change-id}\`（必要时加 \`supersedes: {被取代版本}\`）。基线（无活动变更）**不追加**这些字段，输出与未引入前一致。
 
 ---
+
+## 后端限界上下文建模
+
+> 以下内容适用于**后端限界上下文**。若当前 slug 为交互上下文，请跳至下方「交互上下文建模」章节。
 
 ## 角色定义
 
@@ -531,29 +541,132 @@ deactivate APP
 - [ ] 终版类图中聚合根/实体的每个操作，在至少一张序列图中有对应调用
 - [ ] UML 命名风格统一（PascalCase 类名，camelCase 操作/属性）
 
-## 🖥️ View Model 建模（可选）
+## 🖥️ 交互上下文建模
 
-本阶段无需检查 UI 相关文件。建模时会读取上一阶段（sparrow-design）生成的 \`api.md\` 和 \`tech.md\`。
+> 以下内容适用于**交互上下文**。仅当当前 slug 在 project.md 中标注为「交互上下文」时执行。
 
-如果 \`api.md\` 的序列图和 \`tech.md\` 中包含 UI 相关设计（前端技术栈选型、从 UI 页面发起的消息调用），则：
+### 角色定义
 
-> 📐 约束参见 \`model/view-modeling.md\` harness。
+你是一名 **UI/前端建模专家**，负责为交互上下文进行 ViewModel 和组件建模。
 
-### View Model 设计
+### 建模目标
 
-1. 以页面和组件为粒度，为每个前端 UI 页面/组件设计对应的 **View Model**
-2. View Model 关注**用户体验和布局**，不关注业务规则——这是与领域模型的根本区别
-3. 分析 View Model 与消息契约（DTO）之间的不匹配，定义转换规则：
-   - 字段重命名、类型转换
-   - 从多个 DTO 聚合字段
-   - 计算值的派生
-4. 输出到 model.md 的「View Model」独立章节
+1. **ViewModel 静态模型**：以页面为粒度，为每个 UI 页面/组件设计 ViewModel
+2. **组件树模型**：定义页面组件层级和嵌套关系
+3. **BFF 聚合序列图验证**：基于 design 阶段的 BFF 序列图，细化数据流转
 
-如果 api.md 和 tech.md 中**不含** UI 相关设计，则跳过本节。
+### 核心原则
+
+1. **ViewModel ≠ 领域模型**：ViewModel 关注用户体验和页面布局，不关注业务规则。与 DDD 的领域模型彻底分离。
+2. **页面为粒度**：每个 UI 页面对应一个或多个 ViewModel
+3. **不读 BC 产物**：交互上下文的 model 从自身 api.md 出发，不依赖任何 BC 的领域模型
+
+### 输入文档
+
+| 文档 | 路径 | 用途 |
+|------|------|------|
+| BFF API 契约 | \`docs/sparrow/design/{ui-slug}/api.md\` | BFF 端点定义和 ViewModel 接口 |
+| 前端技术栈 | \`docs/sparrow/design/{ui-slug}/tech.md\` | 技术约束 |
+| UI 规格 | \`docs/sparrow/requirement/ui/ui-spec.md\` | 页面结构和交互定义 |
+
+### 建模步骤
+
+#### 步骤1：ViewModel 静态模型
+
+为每个页面定义 ViewModel：
+
+\`\`\`markdown
+## ViewModel: {PageName}VM
+
+- **页面/组件**：{PageName}
+- **数据来源**：
+  | 来源 BFF 端点 | 来源字段 | 说明 |
+  |-------------|---------|------|
+  | GET /bff/{resource} | {field_path} | {说明} |
+- **字段定义**：
+  | 字段名 | 类型 | 来源字段 | 转换规则 | 说明 |
+  |--------|------|---------|---------|------|
+  | {viewField} | {type} | {bff_field} | {转换规则或"直接映射"} | {字段含义} |
+\`\`\`
+
+#### 步骤2：组件树模型
+
+定义页面组件层级：
+
+\`\`\`markdown
+## 组件树：{PageName}
+
+{PageComponent}
+├── {ChildComponent1}
+│   ├── {Grandchild1}
+│   └── {Grandchild2}
+└── {ChildComponent2}
+
+### 组件职责
+- **{PageComponent}**：{职责描述}
+- **{ChildComponent1}**：{职责描述}
+\`\`\`
+
+#### 步骤3：数据流模型
+
+\`\`\`mermaid
+graph LR
+    subgraph "客户端"
+        UI[UI 页面]
+        Store[状态管理]
+    end
+    subgraph "BFF"
+        BFF_EP[BFF 端点]
+    end
+    subgraph "后端"
+        BC1[{BC1}]
+        BC2[{BC2}]
+    end
+
+    UI --> Store
+    Store --> BFF_EP
+    BFF_EP --> BC1
+    BFF_EP --> BC2
+    BC1 --> BFF_EP
+    BC2 --> BFF_EP
+    BFF_EP --> Store
+    Store --> UI
+\`\`\`
+
+### 输出格式
+
+\`\`\`markdown
+# {交互上下文中文名称} - 模型定义
+
+## 1. ViewModel 静态模型
+### ViewModel: {PageName}VM
+{字段表}
+
+## 2. 组件树模型
+### {PageName}
+{组件树}
+
+## 3. 数据流模型
+{BFF ↔ 各 BC 数据流图}
+
+## 4. ViewModel ↔ BFF 端点映射
+| ViewModel | BFF 端点 | 说明 |
+|-----------|---------|------|
+| {VM Name} | {BFF Endpoint} | {说明} |
+\`\`\`
+
+### 质量检查清单（交互上下文）
+
+- [ ] 每个 UI 页面都有对应的 ViewModel
+- [ ] ViewModel 字段仅包含 UI 展示需要的字段
+- [ ] ViewModel 不包含任何业务逻辑
+- [ ] 组件树覆盖了 ui-spec.md 中定义的所有页面
+- [ ] 数据流模型与 BFF 聚合序列图一致
+- [ ] ViewModel ↔ BFF 端点映射完整无遗漏
 
 ## 完成后的下一步
 
-✅ 完成 sparrow-model @{slug} 后，请执行 **sparrow-plan @{slug}**（团队级）—— 基于 spec/api/tech/model 制订实现计划。
+✅ 完成 sparrow-model @{slug} 后，请执行 **sparrow-plan @{slug}**（团队级）—— 基于 spec/api/tech/model 制订实现计划（后端 BC）或前端实现计划（交互上下文）。
 
 {{PLUGIN:archify}}`;
 

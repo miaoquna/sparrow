@@ -9,7 +9,6 @@
 
 import { CONSTITUTION_BODY } from './constitution.js';
 import { EXPLORE_REQUIREMENTS_BODY } from './explore-requirements.js';
-import { UI_REQUIREMENTS_BODY } from './ui-requirements.js';
 import { ARCH_BUSINESS_BODY } from './arch-business.js';
 import { ARCH_APPLICATION_BODY } from './arch-application.js';
 import { ARCH_FRONTEND_BODY } from './arch-frontend.js';
@@ -44,7 +43,6 @@ export interface HarnessFile {
 export const HARNESS_FILES: HarnessFile[] = [
   { relPath: 'constitution.md', title: '约束资产宪法', body: CONSTITUTION_BODY },
   { relPath: 'explore/requirements.md', title: '需求探索约束', body: EXPLORE_REQUIREMENTS_BODY },
-  { relPath: 'ui/requirements.md', title: 'UI 需求约束', body: UI_REQUIREMENTS_BODY },
   { relPath: 'arch/business.md', title: '业务架构约束', body: ARCH_BUSINESS_BODY },
   { relPath: 'arch/application.md', title: '应用架构约束', body: ARCH_APPLICATION_BODY },
   { relPath: 'arch/frontend.md', title: '前端架构约束', body: ARCH_FRONTEND_BODY },

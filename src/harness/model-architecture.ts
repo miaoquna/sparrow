@@ -52,35 +52,47 @@ export const MODEL_ARCHITECTURE_BODY = `# 领域建模架构约束（model / arc
 5. **消息（DTO / PO）→ 远程服务、应用服务、端口转换之外的对象**：消息只作为数据传输载体。
 6. **远程服务 → 领域服务 / 聚合 / 端口**：远程服务只能编排应用服务。
 
-## 前端代码模型结构（可选，UI 存在时生效）
+## 前端代码模型结构（可选，交互上下文存在时生效）
 
-> 如果 sparrow-design 阶段的 \`tech.md\` 中包含前端技术栈选型，则以下纪律生效。
+> 此约束适用于交互上下文的 model 和 apply 阶段。
 
 ### 前端分层
 
-1. 前端代码应遵循与后端对应的分层结构：
-   - **pages**：路由页面组件，对应 DDD 的应用层编排
-   - **components**：可复用的 UI 组件，类似领域层的独立单元
-   - **services**：API 调用与状态管理，类似基础设施层的适配器
-   - **adapters**：数据转换层（DTO ↔ ViewModel），类似南向网关的消息契约转换
+1. 前端代码按交互上下文组织：
+   - **pages**：路由页面组件
+   - **components**：可复用的 UI 组件
+   - **services**：调用 BFF 端点的服务层
+   - **adapters**：ViewModel ↔ BFF 响应转换
+   - **stores**：状态管理
 
 ### 前端目录结构
 
 \`\`\`
-frontend/{bc-slug}/
-├── src/
-│   ├── pages/           # 页面组件——一个页面对应一个或多个 UI 原型页面
-│   ├── components/      # UI 组件——可复用的视图组件
-│   ├── services/        # 服务层——调用后端 API 的 HTTP Client
-│   ├── adapters/        # 适配层——DTO ↔ ViewModel 转换
-│   ├── stores/          # 状态管理（如 Pinia / Zustand / Redux 等）
-│   └── router/          # 路由配置
-└── package.json
+frontend/
+├── features/
+│   └── {feature-name}/
+│       ├── pages/
+│       ├── components/
+│       ├── services/
+│       ├── adapters/
+│       └── stores/
+├── shared/
+│   ├── components/
+│   ├── styles/
+│   └── utils/
+└── shell/
+
+edge/
+└── bff/
+    └── {page-or-feature}/
+        └── *Aggregator
 \`\`\`
 
 ### 前端依赖方向
 
 1. pages → components + services
 2. services → adapters
+3. adapters → BFF types
+4. services → BFF endpoints (via edge/bff/)
 3. **禁止** components 直接调用 services（组件只接收 Props/Events）
 4. **禁止** adapters 引用 pages 或 components`;

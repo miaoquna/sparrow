@@ -13,15 +13,21 @@ const APPLY_BODY = `# Sparrow Apply — 按实现计划执行代码生成
 
 \`\`\`
 当前步骤：sparrow-apply（第 6 步 / 共 6 步）
-所属层级：团队级（team-level），针对特定限界上下文
+所属层级：团队级（team-level），针对特定限界上下文或交互上下文
 前置条件：docs/sparrow/design/{slug}/plan.md 必须存在
-后续步骤：无（这是最后一步，但可以对其他限界上下文继续执行 sparrow-design → sparrow-model → sparrow-plan → sparrow-apply）
+后续步骤：无（这是最后一步，但可以对其他 slug 继续执行 sparrow-design → sparrow-model → sparrow-plan → sparrow-apply）
 \`\`\`
 
 **前置条件检查**：
 - 如果 \`docs/sparrow/design/{slug}/plan.md\` 不存在，请提示用户先执行 **sparrow-plan @{slug}**
-- 如果用户未指定限界上下文，请列出可用的限界上下文让用户选择
+- 如果用户未指定 slug，请列出可用的 slug 让用户选择（从 project.md 中读取）
 - 如果 plan.md 中的所有步骤都已标记为 \`- [x]\`，说明当前上下文已执行完毕
+
+### Slug 类型判定
+
+1. 读取 \`docs/sparrow/project.md\` 的「限界上下文设计」部分
+2. 如果当前 slug 标注了 **— *交互上下文*** 标记 → 执行下方「交互上下文代码生成」章节
+3. 否则 → 执行下方「后端限界上下文代码生成」章节（保持现有逻辑）
 
 {{HARNESS}}
 
@@ -314,27 +320,88 @@ docs/sparrow/design/{slug}/code_review.md
 - [ ] **领域对象富含行为，非贫血模型**（业务逻辑在聚合根/实体内部，不在领域服务中集中处理本应由聚合承担的逻辑）
 - [ ] **无跨聚合的链式调用**（如 \`a.getB().getC().doX()\`，迪米特法则）
 
-## 🖥️ 前端代码生成
+## 🖥️ 交互上下文代码生成
 
-本阶段无需检查 UI 相关文件。sparrow-apply 按照 sparrow-plan 生成的 \`plan.md\` 中的任务清单执行。
+> 以下内容适用于**交互上下文**。仅当当前 slug 在 project.md 中标注为「交互上下文」时执行。
 
-如果 \`plan.md\` 中包含前端开发任务：
-- 按 \`plan.md\` 中的任务顺序和分类执行前端代码生成
-- 前端代码输出到 \`frontend/{slug}/\` 目录
-- 按 \`tech.md\` 的前端技术栈选型使用对应框架
+### 角色定义
 
-如果 \`plan.md\` 中**不含**前端任务，则跳过本节。
+- **Development Engineer** (\`dev\`)：前端页面代码 + BFF 聚合层代码
+- **QA Engineer** (\`qa\`)：BFF 契约测试 + 页面组件测试 + E2E 测试
+- **Code Review**：代码评审，生成 code_review.md
 
----
+### 代码目录检查
+
+\`\`\`
+frontend/
+├── features/                     # 按交互上下文/特性组织
+│   └── {feature-name}/
+│       ├── pages/
+│       ├── components/
+│       ├── services/
+│       ├── adapters/
+│       └── stores/
+├── shared/
+│   ├── components/
+│   ├── styles/
+│   └── utils/
+└── shell/                        # 微前端基座（可选）
+
+edge/
+└── bff/
+    └── {page-or-feature}/
+        └── *Aggregator
+\`\`\`
+
+### 前端代码生成规则
+
+1. **页面组件**按 ui-spec.md 中的页面定义和 model.md 中的组件树实现
+2. **服务层**调用 BFF 端点（不直接调用 BC API）
+3. **适配层**实现 ViewModel ↔ BFF 响应的转换
+4. **状态管理**按 model.md 的数据流模型配置
+
+### BFF 代码生成规则
+
+1. 每个 BFF 端点实现为一个聚合器（Aggregator）
+2. 聚合器按 api.md 中定义的聚合 BC 调用和降级策略实现
+3. BFF 不包含业务逻辑——只做数据聚合和格式转换
+4. BFF 代码不放在 \`backend/{slug}/\` 下，放在 \`edge/bff/\` 下
+
+### 输出结构
+
+\`\`\`
+frontend/features/{feature}/
+  pages/{PageName}.{ext}
+  components/{ComponentName}.{ext}
+  services/{bff}Api.{ext}
+  adapters/{viewModel}Mapper.{ext}
+  stores/{storeName}.{ext}
+
+edge/bff/
+  {pageName}/
+    {PageName}Aggregator.{ext}
+
+docs/sparrow/design/{ui-slug}/code_review.md
+\`\`\`
+
+### 质量检查清单（交互上下文）
+
+- [ ] 所有页面组件已生成
+- [ ] BFF 聚合端点全部实现
+- [ ] BFF 端点调用的是 BC API（非直接操作 BC 数据库）
+- [ ] ViewModel 适配器正确实现了字段映射
+- [ ] 降级策略已实现
+- [ ] Code Review 完成
+- [ ] plan.md 所有步骤标记为 \`- [x]\`
 
 ## 完成后的下一步
 
-🎉 当前限界上下文 \`{slug}\` 已全部完成！
+🎉 当前上下文 \`{slug}\` 已全部完成！
 
-如果有其他限界上下文需要实现，请对每个上下文执行：
+如果有其他限界上下文（含交互上下文）需要实现，请选择对应的 slug 执行：
 **sparrow-design → sparrow-model → sparrow-plan → sparrow-apply**
 
-全部限界上下文完成后，产品代码集中在 \`backend/\` 目录下，共享项目根命名空间，各上下文为独立模块。`;
+> 所有上下文之间完全独立，可以任意顺序执行。`;
 
 export function register(): void {
   registerSkillTemplate('sparrow-apply', () => APPLY_BODY);

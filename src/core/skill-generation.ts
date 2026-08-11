@@ -20,7 +20,6 @@ import { generateProjectMdContent } from './project-md.js';
  */
 const SKILL_HARNESS_MAP: Record<string, string[]> = {
   'sparrow-explore': ['explore/requirements.md'],
-  'sparrow-ui': ['ui/requirements.md'],
   'sparrow-arch': ['arch/business.md', 'arch/application.md', 'arch/frontend.md'],
   'sparrow-design': ['design/api-design.md'],
   'sparrow-model': ['model/architecture.md', 'model/domain-modeling.md', 'model/view-modeling.md'],
