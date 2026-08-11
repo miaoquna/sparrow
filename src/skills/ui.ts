@@ -92,13 +92,56 @@ const UI_BODY = `# Sparrow UI — 基于 DDD 的前端界面生成
 2. 全局级 harness（\`~/.config/sparrow/harness/\`）中的 UI 设计约束
 3. 若无 harness 约束，询问用户选择前端技术栈
 
-### 步骤五：UI 规格生成
+### 步骤五：UI 规格文档生成
 
-生成以下规格文档：
+生成一个统一的 **UI 规格 Markdown 文档**（\`docs/sparrow/ui/ui-spec.md\`），将所有角色和页面的规格整合在一份文档中。
 
-1. **设计令牌**（\`docs/sparrow/ui/design-tokens.md\`）：色彩体系、字体层级、间距系统、圆角/阴影规范
-2. **组件库**（\`docs/sparrow/ui/components/component-library.md\`）：通用 UI 组件定义及其变体
-3. **各 BC 的 UI 规格**（\`docs/sparrow/ui/specs/{slug}/ui-spec.md\`）：基于限界上下文划分的界面定义
+如果目标系统有**多个用户角色**（如在步骤一中识别了多个参与者），文档按角色分章节组织：
+
+\`\`\`markdown
+# {系统名称} UI 规格
+
+## {角色1名称}
+### 用户画像
+- 角色：{角色名称}
+- 核心目标：{目标}
+- 技术熟练度：{熟练度}
+- 使用场景：{场景}
+
+### 用户旅程
+{该角色的用户旅程描述，含情感曲线}
+
+### UI 页面
+#### {页面1名称}
+- **页面路径**：/{path}
+- **页面目的**：{解决的用户旅程触点}
+- **页面结构**：
+  \`\`\`
+  ┌──────────────────┐
+  │    Header/导航    │
+  ├──────────────────┤
+  │                  │
+  │   主内容区域      │
+  │                  │
+  ├──────────────────┤
+  │    Footer/操作栏  │
+  └──────────────────┘
+  \`\`\`
+- **交互方式**：
+  | 操作 | 触发元素 | 系统响应 | 关联 BC |
+  |------|---------|---------|---------|
+  | {操作1} | {触发} | {响应} | {BC名称} |
+- **关联的限界上下文**：{BC名称列表}
+
+#### {页面2名称}
+...
+
+## {角色2名称}
+...
+\`\`\`
+
+2. **设计令牌**（\`docs/sparrow/ui/design-tokens.md\`）：色彩体系、字体层级、间距系统、圆角/阴影规范
+3. **组件库**（\`docs/sparrow/ui/components/component-library.md\`）：通用 UI 组件定义及其变体
 
 ### 步骤六：原型页面生成
 
@@ -115,13 +158,11 @@ const UI_BODY = `# Sparrow UI — 基于 DDD 的前端界面生成
 
 \`\`\`
 docs/sparrow/ui/
+├── ui-spec.md                    # 统一的 UI 规格文档（按角色分章节）
 ├── design-tokens.md              # 设计令牌
 ├── index.html                    # 主页面原型
 ├── components/
 │   └── component-library.md      # 组件库
-├── specs/
-│   └── {slug}/
-│       └── ui-spec.md            # 各限界上下文的 UI 规格
 └── mockups/                      # 视觉稿/截图
 \`\`\`
 
@@ -131,15 +172,16 @@ docs/sparrow/ui/
 - [ ] 用户画像从 prd-business.md 的 Actor 推导而来
 - [ ] 用户旅程覆盖完整的交互流程，包含情感曲线
 - [ ] UI 页面与用户旅程的关键触点一一对应
+- [ ] UI 规格文档（ui-spec.md）按角色分章节组织（多角色时）
+- [ ] 每个 UI 页面的交互方式标注了关联的限界上下文
 - [ ] 设计令牌完整（色彩、字体、间距）
 - [ ] 组件被正确识别和归类
 - [ ] 原型页面可独立打开和交互
-- [ ] 每个 UI 页面标注了关联的限界上下文
 - [ ] 技术栈选择与项目 harness 一致（如有）
 
 ## 完成后的下一步
 
-✅ 完成 sparrow-ui 后，请执行 **sparrow-arch**（产品级）—— sparrow-arch 将检查 UI 规格，在业务架构和应用架构设计中纳入前端考虑，并生成独立的前端架构文档 \`docs/sparrow/arch/frontend.md\`。`;
+✅ 完成 sparrow-ui 后，请执行 **sparrow-arch**（产品级）—— 基于 prd-business.md 划分子领域并映射限界上下文，生成业务架构和应用架构文档；基于 ui-spec.md 等 UI 规格文档生成前端架构文档 \`docs/sparrow/arch/frontend.md\`。`;
 
 export function register(): void {
   registerSkillTemplate('sparrow-ui', () => UI_BODY);

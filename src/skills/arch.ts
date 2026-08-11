@@ -687,7 +687,7 @@ UI 规格尚未生成。询问用户：
 
 ### 如果存在
 
-读取 UI 规格（\`docs/sparrow/ui/specs/\`、\`docs/sparrow/ui/design-tokens.md\`），在架构设计中纳入前端考虑。
+读取 UI 规格（\`docs/sparrow/ui/ui-spec.md\`、\`docs/sparrow/ui/design-tokens.md\`），在架构设计中纳入前端考虑。
 
 **设计前端架构**（独立于应用架构，写入 \`docs/sparrow/arch/frontend.md\`）：
 

@@ -22,13 +22,12 @@
 
 所有 UI 相关产出统一存放于：
 
-```
+\`\`\`
 docs/sparrow/ui/
-├── specs/              # 各限界上下文的 UI 规格
-│   └── {slug}/
-│       └── ui-spec.md
-├── index.html          # 主页面原型
-├── components/         # 共享组件库
+├── ui-spec.md           # 统一的 UI 规格文档（按角色分章节）
+├── design-tokens.md     # 设计令牌（色彩、字体、间距）
+├── index.html           # 主页面原型
+├── components/          # 共享组件库
 │   └── component-library.md
 ├── design-tokens.md    # 设计令牌（色彩、字体、间距）
 └── mockups/            # 视觉稿/截图

@@ -62,7 +62,7 @@ export function generateProjectMdContent(
 > 如果项目需要前端界面，请执行 \`/sparrow-ui\` 技能生成 UI 规格。
 > 生成的 UI 规格与原型存放于 \`docs/sparrow/ui/\` 目录。
 
-- [ ] [UI 规格](../ui/specs/) — *待生成 (sparrow-ui)*
+- [ ] [UI 规格](../ui/ui-spec.md) — *待生成 (sparrow-ui)*
 - [ ] [主页面原型](../ui/index.html) — *待生成 (sparrow-ui)*
 - [ ] [设计令牌](../ui/design-tokens.md) — *待生成 (sparrow-ui)*
 
