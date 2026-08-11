@@ -461,7 +461,7 @@ ExtSys <<-- EVT_OrderPlaced : subscribes
 
 ## 🖥️ 前端架构（读取 frontend.md）
 
-读取 \`docs/sparrow/arch/frontend.md\`。如果文件存在：
+读取 \`docs/sparrow/architecture/frontend.md\`。如果文件存在：
 
 ### API 设计适配
 

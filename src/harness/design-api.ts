@@ -39,7 +39,7 @@ export const DESIGN_API_BODY = `# API 设计约束（design / api-design）
 
 ## 前端架构（可选，存在 frontend.md 时生效）
 
-> 如果 \`docs/sparrow/arch/frontend.md\` 存在，则以下纪律生效。
+> 如果 \`docs/sparrow/architecture/frontend.md\` 存在，则以下纪律生效。
 
 ### 序列图起点
 

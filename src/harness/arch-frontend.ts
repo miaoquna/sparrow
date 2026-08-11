@@ -7,7 +7,7 @@ export const ARCH_FRONTEND_BODY = `# 前端架构约束（arch / frontend）
 ## 前端架构定位
 
 1. 前端架构为**项目级架构**，与应用架构（\`application.md\`）同级。
-2. 前端架构定义后，写入 \`docs/sparrow/arch/frontend.md\`。
+2. 前端架构定义后，写入 \`docs/sparrow/architecture/frontend.md\`。
 3. 应用架构中的**边缘层**和**客户端层**与前端架构关联：
    - 边缘层：定义 UI 适配与服务聚合能力
    - 客户端层：按 UI 规格确定客户端类型（Web / Mobile / 小程序等）

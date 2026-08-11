@@ -689,16 +689,16 @@ UI 规格尚未生成。询问用户：
 
 读取 UI 规格（\`docs/sparrow/ui/ui-spec.md\`、\`docs/sparrow/ui/design-tokens.md\`），在架构设计中纳入前端考虑。
 
-**设计前端架构**（独立于应用架构，写入 \`docs/sparrow/arch/frontend.md\`）：
+**设计前端架构**（独立于应用架构，写入 \`docs/sparrow/architecture/frontend.md\`）：
 
-> 📐 前端架构约束参见 \`arch/frontend.md\` harness。
+> 📐 前端架构约束参见 \`architecture/frontend.md\` harness。
 
 1. **客户端层**：按 UI 规格确定客户端类型（Web / Mobile / 小程序等）
 2. **微前端评估**：如果项目包含多个独立的 UI 模块，评估是否需要微前端架构（参见 harness）
 3. **应用架构关联**：
    - 边缘层增加 UI 适配对象（ViewModel ↔ DTO 转换不匹配时）和服务聚合对象（UI 需同时调用多个 BC 时）
    - 客户端层的设计体现在应用架构图中
-4. **输出 frontend.md**：写入 \`docs/sparrow/arch/frontend.md\`，包含：
+4. **输出 frontend.md**：写入 \`docs/sparrow/architecture/frontend.md\`，包含：
    - 前端架构图（Archify 交互式图）
    - 前端模块与后端 BC 的对应关系
    - 前端代码目录结构（按 harness 规范）

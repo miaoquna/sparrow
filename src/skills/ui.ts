@@ -181,7 +181,7 @@ docs/sparrow/ui/
 
 ## 完成后的下一步
 
-✅ 完成 sparrow-ui 后，请执行 **sparrow-arch**（产品级）—— 基于 prd-business.md 划分子领域并映射限界上下文，生成业务架构和应用架构文档；基于 ui-spec.md 等 UI 规格文档生成前端架构文档 \`docs/sparrow/arch/frontend.md\`。`;
+✅ 完成 sparrow-ui 后，请执行 **sparrow-arch**（产品级）—— 基于 prd-business.md 划分子领域并映射限界上下文，生成业务架构和应用架构文档；基于 ui-spec.md 等 UI 规格文档生成前端架构文档 \`docs/sparrow/architecture/frontend.md\`。`;
 
 export function register(): void {
   registerSkillTemplate('sparrow-ui', () => UI_BODY);
