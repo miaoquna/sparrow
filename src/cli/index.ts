@@ -151,11 +151,18 @@ program
       const result = execSync(`npm view sparrow-ddd version`, {
         encoding: 'utf-8',
         stdio: ['pipe', 'pipe', 'pipe'],
-        timeout: 15000,
+        timeout: 30000,
       });
       latestVersion = result.trim();
-    } catch {
-      console.error('❌ Could not fetch latest version from npm. Check your network connection.');
+    } catch (e: any) {
+      const isTimeout = e?.status === null && e?.signal === 'SIGTERM';
+      if (isTimeout) {
+        console.error('❌ Request to npm registry timed out (30s).');
+        console.error('   Try setting a closer registry mirror:');
+        console.error('   npm config set registry https://registry.npmmirror.com');
+      } else {
+        console.error('❌ Could not fetch latest version from npm. Check your network connection.');
+      }
       process.exit(1);
     }
 
